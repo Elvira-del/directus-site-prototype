@@ -1,5 +1,6 @@
 "use client";
 
+import { Container } from "@/components/Container";
 import Post from "@/components/Post";
 import client from "@/lib/directus";
 import { readItems } from "@directus/sdk";
@@ -48,7 +49,7 @@ export default function Page() {
 
   return (
     <section className="mb-10">
-      <div className="container mx-auto my-0">
+      <Container>
         <h1 className="text-3xl font-bold">Blog</h1>
         {posts ? (
           <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -59,7 +60,7 @@ export default function Page() {
         ) : (
           <div>Loading...</div>
         )}
-      </div>
+      </Container>
     </section>
   );
 }

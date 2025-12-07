@@ -1,4 +1,3 @@
-import { BACKEND_URL } from "@/lib/directus";
 import { ArrowRight, Calendar, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +10,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
+import { Container } from "./Container";
 
 export default function CardGroup({
   id,
@@ -31,7 +31,7 @@ export default function CardGroup({
 
   return (
     <section className="mb-10">
-      <div className="container mx-auto my-0">
+      <Container>
         <div className="text-center mb-5">
           <h2 className="text-gray-900 text-2xl mb-4">{headline}</h2>
           <div
@@ -50,7 +50,7 @@ export default function CardGroup({
                 <div className="relative h-48">
                   <Image
                     className="rounded-t-xl"
-                    src={`${BACKEND_URL}assets/${post.posts_id?.image}`}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/${post.posts_id?.image}`}
                     alt=""
                     fill
                   />
@@ -76,7 +76,7 @@ export default function CardGroup({
                     <Calendar className="h-4 w-4" />
                     <span>
                       {new Date(
-                        post.posts_id?.date_created
+                        post.posts_id?.date_created,
                       ).toLocaleDateString()}
                     </span>
                   </div>
@@ -99,7 +99,7 @@ export default function CardGroup({
             {cards?.map((card, index) => (
               <div key={index}>
                 <Image
-                  src={`${BACKEND_URL}assets/${card.cards_id?.image}`}
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/${card.cards_id?.image}`}
                   alt=""
                   width={70}
                   height={35}
@@ -119,7 +119,7 @@ export default function CardGroup({
             </Link>
           </Button>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
