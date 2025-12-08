@@ -30,8 +30,6 @@ export default function Post({
   date_created,
   tags,
 }: PostProps) {
-  console.info("Category:", category);
-  console.info("Tags:", tags);
   return (
     <>
       {variant === "card" ? (

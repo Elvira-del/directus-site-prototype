@@ -1,9 +1,11 @@
 import { Container } from "@/components/Container";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -29,36 +31,40 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import client from "@/lib/directus";
-import { aggregate, readItems } from "@directus/sdk";
+import { readItems } from "@directus/sdk";
 import Link from "next/link";
 
 const getPartners = async () => {
   try {
-    const response = await client.request(
+    const partners = await client.request(
       readItems("partners", {
-        fields: [
-          "id",
-          "name",
-          "description",
-          "logo",
-          "website",
-          "category",
-          "featured",
-          "status",
-          "sort",
-          "slug",
-        ],
+        fields: ["*", { category: ["name"] }],
       }),
     );
 
-    return response;
+    return partners;
   } catch (error) {
     console.error("Error fetching partners:", error);
   }
 };
 
+const getPartnerCategories = async () => {
+  try {
+    const categories = await client.request(
+      readItems("partner_categories", {
+        fields: ["id", "name"],
+      }),
+    );
+
+    return categories;
+  } catch (error) {
+    console.error("Error fetching partner categories:", error);
+  }
+};
+
 export default async function Page() {
   const partners = await getPartners();
+  const categories = await getPartnerCategories();
 
   return (
     <section className="mb-10">
@@ -74,10 +80,11 @@ export default async function Page() {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Categories</SelectLabel>
-                  <SelectItem value="technology">Technology</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="healthcare">Healthcare</SelectItem>
-                  <SelectItem value="education">Education</SelectItem>
+                  {categories?.map(({ name }) => (
+                    <SelectItem key={name} value={name}>
+                      {name}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -102,11 +109,14 @@ export default async function Page() {
           </div>
         </div>
         <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {partners.map((partner) => (
+          {partners?.map((partner) => (
             <li key={partner.id}>
               <Card className="h-full">
-                <CardHeader>
+                <CardHeader className="flex justify-between">
                   <CardTitle>{partner.name}</CardTitle>
+                  <CardDescription>
+                    <Badge variant="secondary">{partner.category?.name}</Badge>
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div

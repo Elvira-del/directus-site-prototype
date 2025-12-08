@@ -3,10 +3,8 @@ import client from "@/lib/directus";
 import { readItems } from "@directus/sdk";
 import { notFound } from "next/navigation";
 
-export default async function PartnerDetail({ params }) {
+const getPartnerBySlug = async (slug: string) => {
   try {
-    const { slug } = await params;
-
     const partners = await client.request(
       readItems("partners", {
         filter: {
@@ -28,21 +26,27 @@ export default async function PartnerDetail({ params }) {
       }),
     );
     const partner = partners[0];
-
-    if (!partner) {
-      return notFound();
-    }
-
-    return (
-      <section className="mb-10">
-        <Container>
-        <h1 className="text-3xl font-bold">{partner.name}</h1>
-        <div dangerouslySetInnerHTML={{ __html: partner.description }} />
-        </Container>
-      </section>
-    );
+    return partner;
   } catch (error) {
-    console.error("Error fetching partner:", error);
+    console.error("Error fetching partner by slug:", error);
+    return null;
+  }
+};
+
+export default async function PartnerDetail({ params }) {
+  const { slug } = await params;
+  const partner = await getPartnerBySlug(slug);
+
+  if (!partner) {
     return notFound();
   }
+
+  return (
+    <section className="mb-10">
+      <Container>
+        <h1 className="text-3xl font-bold">{partner.name}</h1>
+        <div dangerouslySetInnerHTML={{ __html: partner.description }} />
+      </Container>
+    </section>
+  );
 }
