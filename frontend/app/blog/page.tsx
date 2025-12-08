@@ -14,26 +14,12 @@ export default function Page() {
       try {
         const response = await client.request(
           readItems("posts", {
-            fields: [
-              "id",
-              "title",
-              "slug",
-              "image.title",
-              "image.id",
-              "excert",
-              "content",
-              // "category",
-              "status",
-              // "tags",
-              "featured",
-              "sort",
-              "date_created",
-            ],
+            fields: ["*", "image.title", "image.id"],
             filter: {
               status: { _eq: "published" },
             },
             sort: ["-date_created"],
-          })
+          }),
         );
         setPosts(response);
         console.log("Posts fetched:", response);
@@ -44,8 +30,6 @@ export default function Page() {
 
     fetchPosts();
   }, []);
-
-  console.info("Rendering posts:", posts);
 
   return (
     <section className="mb-10">

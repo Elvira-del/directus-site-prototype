@@ -8,14 +8,12 @@ export default function RootLayout({ children }) {
     <html className="h-full" lang="en">
       <body className="h-full">
         <div className="grid grid-rows-[auto_1fr_auto] min-h-full">
-        <Header />
+          <Header />
           <main>
-            
-          <Breadcrumbs />
-              {children}
-              
-        </main>
-        <Footer />
+            <Breadcrumbs />
+            {children}
+          </main>
+          <Footer />
         </div>
       </body>
     </html>

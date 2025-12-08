@@ -46,13 +46,11 @@ export default async function Page({ params }) {
         "blocks.item.ticker_partners.partners_id.name",
         "blocks.item.ticker_partners.partners_id.logo",
         "blocks.item.ticker_partners.partners_id.featured",
-        "blocks.item.released_features.*.*"
+        "blocks.item.released_features.*.*",
       ],
       limit: 1,
-    })
+    }),
   );
-
-  console.info("Page data:", page);
 
   return (
     <div>

@@ -12,6 +12,8 @@ const navLinks = [
   { label: "About Company", slug: "/" },
   { label: "Blog", slug: "blog" },
   { label: "Partners", slug: "partners" },
+  { label: "Documentation", slug: "docs" },
+  { label: "Solutions", slug: "solutions" },
 ];
 
 export const Header = () => {
