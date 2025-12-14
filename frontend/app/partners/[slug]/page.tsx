@@ -33,7 +33,11 @@ const getPartnerBySlug = async (slug: string) => {
   }
 };
 
-export default async function PartnerDetail({ params }) {
+export default async function PartnerDetail({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const partner = await getPartnerBySlug(slug);
 

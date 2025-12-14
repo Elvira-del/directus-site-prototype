@@ -1,4 +1,4 @@
-import { ArrowRight, Calendar, Clock } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,6 +11,7 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import { Container } from "./Container";
+import { IBlockCardGroup } from "@/types/api.types";
 
 export default function CardGroup({
   id,
@@ -19,18 +20,13 @@ export default function CardGroup({
   group_type,
   posts,
   cards,
-}) {
-  console.info("CardGroup props:", {
-    posts,
-    cards,
-  });
-
-  if (!posts.length && !cards?.length) {
+}: IBlockCardGroup) {
+  if (!posts?.length && !cards?.length) {
     return null;
   }
 
   return (
-    <section className="mb-10">
+    <section className="mb-10" id={id}>
       <Container>
         <div className="text-center mb-5">
           <h2 className="text-gray-900 text-2xl mb-4">{headline}</h2>
@@ -68,7 +64,7 @@ export default function CardGroup({
                   <div
                     className="mb-4"
                     dangerouslySetInnerHTML={{
-                      __html: post.posts_id?.excert,
+                      __html: post.posts_id?.excert ?? "",
                     }}
                   />
 
@@ -76,7 +72,7 @@ export default function CardGroup({
                     <Calendar className="h-4 w-4" />
                     <span>
                       {new Date(
-                        post.posts_id?.date_created,
+                        post.posts_id?.date_created || "",
                       ).toLocaleDateString()}
                     </span>
                   </div>
@@ -98,16 +94,21 @@ export default function CardGroup({
           <div>
             {cards?.map((card, index) => (
               <div key={index}>
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/${card.cards_id?.image}`}
-                  alt=""
-                  width={70}
-                  height={35}
-                />
-                <p
-                  dangerouslySetInnerHTML={{ __html: card.cards_id?.content }}
-                />
+                <h3>Card block</h3>
               </div>
+              // <div key={index}>
+              //   <Image
+              //     src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/${card.cards_id?.image}`}
+              //     alt=""
+              //     width={70}
+              //     height={35}
+              //   />
+              //   <p
+              //     dangerouslySetInnerHTML={{
+              //       __html: card.cards_id?.content ?? "",
+              //     }}
+              //   />
+              // </div>
             ))}
           </div>
         )}

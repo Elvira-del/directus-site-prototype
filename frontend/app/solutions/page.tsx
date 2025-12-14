@@ -4,20 +4,30 @@ import client from "@/lib/directus";
 import { readItems } from "@directus/sdk";
 import { Terminal } from "lucide-react";
 import { SolutionsList } from "./components/SolutionsList";
+import { IErrorSolutions } from "@/types/api.types";
 
-const getErrorSolutions = async () => {
+const getErrorSolutions = async (): Promise<IErrorSolutions[] | undefined> => {
   try {
-    return client.request(
+    const solutions = await client.request(
       readItems("error_solutions", {
         fields: [
-          "*",
-          { symptoms: ["error_symptoms_id.*"] },
-          { causes: ["error_causes_id.*"] },
-          { steps: ["error_steps_id.*"] },
+          "id",
+          "code",
+          "title",
+          "description",
+          "severity",
+          "category",
+          { symptoms: ["id", { error_symptoms_id: ["id", "title"] }] },
+          { causes: ["id", { error_causes_id: ["id", "title"] }] },
           "tags",
-        ],
+          "status",
+          "sort",
+          "date_updated",
+        ] as const,
       }),
     );
+
+    return solutions as IErrorSolutions[];
   } catch (error) {
     console.error("Error fetching solutions:", error);
   }
@@ -25,8 +35,6 @@ const getErrorSolutions = async () => {
 
 export default async function Page() {
   const solutions = await getErrorSolutions();
-
-  console.info("Solutions:", solutions);
 
   return (
     <section>

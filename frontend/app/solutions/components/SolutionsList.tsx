@@ -4,6 +4,7 @@ import { Container } from "@/components/Container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { IErrorSolutions } from "@/types/api.types";
 import {
   AlertCircle,
   AlertTriangle,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-function getSeverityIcon(severity) {
+function getSeverityIcon(severity: string) {
   switch (severity) {
     case "critical":
       return <AlertCircle className="h-5 w-5 text-red-500" />;
@@ -27,7 +28,7 @@ function getSeverityIcon(severity) {
   }
 }
 
-function getSeverityColor(severity) {
+function getSeverityColor(severity: string) {
   switch (severity) {
     case "critical":
       return "bg-red-100 text-red-800 border-red-200";
@@ -40,8 +41,22 @@ function getSeverityColor(severity) {
   }
 }
 
-export const SolutionsList = ({ solutions }) => {
+export const SolutionsList = ({
+  solutions,
+}: {
+  solutions: IErrorSolutions[] | undefined;
+}) => {
   const [expandedError, setExpandedError] = useState<string | null>(null);
+
+  if (!solutions || solutions.length === 0) {
+    return (
+      <Container>
+        <div className="text-center py-12">
+          <p className="text-gray-500">No solutions found</p>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container>

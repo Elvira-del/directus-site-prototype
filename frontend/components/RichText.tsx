@@ -1,12 +1,7 @@
+import { IBlockRichtext } from "@/types/api.types";
 import { Container } from "./Container";
 
-type RichTextProps = {
-  id: string;
-  headline: string;
-  content: string;
-};
-
-export default function RichText({ id, headline, content }: RichTextProps) {
+export default function RichText({ id, headline, content }: IBlockRichtext) {
   return (
     <section id={id} className="mb-10">
       <Container>

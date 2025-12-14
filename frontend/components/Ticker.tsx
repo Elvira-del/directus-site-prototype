@@ -1,50 +1,34 @@
-"use client";
-
 import client from "@/lib/directus";
-import { Partner } from "@/types/api.types";
+import { IBlockTicker, IPartners } from "@/types/api.types";
 import { readItems } from "@directus/sdk";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { Container } from "./Container";
 
-type TickerProps = {
-  id: string;
-  headline: string;
-  content: string;
-  ticker_partners: Partner[];
-  ticker_items: any[];
+const getTickerPartners = async () => {
+  try {
+    const tickerPartners = await client.request(
+      readItems("partners", {
+        filter: {
+          featured: { _eq: true },
+        },
+      }),
+    );
+    const duplications = tickerPartners.length < 5 ? 4 : 2;
+    const expandedPartners = Array(duplications).fill(tickerPartners).flat();
+    return expandedPartners as IPartners[];
+  } catch (error) {
+    console.error("Error fetching ticker partners:", error);
+  }
 };
 
-export default function Ticker({
+export default async function Ticker({
   id,
   headline,
   content,
   ticker_partners,
   ticker_items,
-}: TickerProps) {
-  const [tickerPartners, setTickerPartners] = useState<Partner[]>([]);
-  const duplications = tickerPartners.length < 5 ? 4 : 2;
-
-  useEffect(() => {
-    const fetchTickerPartners = async () => {
-      try {
-        const response = await client.request(
-          readItems("partners", {
-            filter: {
-              featured: { _eq: true },
-            },
-          })
-        );
-        const expandedPartners = Array(duplications).fill(response).flat();
-        setTickerPartners(expandedPartners);
-        console.info("Ticker partners fetched:", expandedPartners);
-      } catch (error) {
-        console.error("Error fetching ticker partners:", error);
-      }
-    };
-
-    fetchTickerPartners();
-  }, []);
+}: IBlockTicker) {
+  const tickerPartners = await getTickerPartners();
 
   if (!tickerPartners?.length) {
     return null;
@@ -68,7 +52,7 @@ export default function Ticker({
                 className="group flex items-center gap-2 shrink-0"
               >
                 <Image
-                  src={`http://localhost:8055/assets/${partner.logo}`}
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/${partner.logo}`}
                   alt=""
                   width={40}
                   height={40}

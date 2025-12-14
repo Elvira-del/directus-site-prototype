@@ -1,13 +1,6 @@
 import Image from "next/image";
 import { Container } from "./Container";
-
-type HeroProps = {
-  id: string;
-  headline: string;
-  content: string;
-  buttons: { label: string }[];
-  image: string;
-};
+import { IBlockHero } from "@/types/api.types";
 
 export default function Hero({
   id,
@@ -15,7 +8,7 @@ export default function Hero({
   content,
   buttons,
   image,
-}: HeroProps) {
+}: IBlockHero) {
   return (
     <section id={id} className="mb-10">
       <Container>

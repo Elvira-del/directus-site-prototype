@@ -1,9 +1,10 @@
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { ReactNode } from "react";
 import "./globals.css";
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className="h-full" lang="en">
       <body className="h-full">

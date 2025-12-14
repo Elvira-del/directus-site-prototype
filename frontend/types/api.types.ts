@@ -36,7 +36,7 @@ export interface IPages {
 export interface IPagesBlocks { 
   id: number;
   pages_id: string | IPages;
-  item: string | IBlockTicker;
+  item: IBlockTicker | IBlockCardGroup | IBlockHero | IBlockRichtext | IBlockFeatures;
   collection: "block_cardgroup" | "block_hero" | "block_richtext" | "block_ticker" | "block_features";
   sort: number;
 }
@@ -59,7 +59,7 @@ export interface IPosts {
   date_updated: "datetime";
   sort: number;
   seo: number | ISEO;  
-  tags: "json";
+  tags: string[];
 };
 
 export interface ISEO {
@@ -81,24 +81,24 @@ export interface IErrorSolutions {
   description: string | TrustedHTML;
   severity: "critical" | "high" | "medium" | "low";
   category: string;
-  symptoms: number[] | IErrorSolutionsSymptoms[];
-  causes: number[] | IErrorSolutionsCauses[];
-  tags: "json";
+  symptoms: IErrorSolutionsSymptoms[];
+  causes: IErrorSolutionsCauses[];
+  tags: string[];
   status: "published" | "draft" | "archived";
   sort: number;
-  date_updated: "datetime";
+  date_updated: string;
 }
 
 export interface IErrorSolutionsSymptoms { 
   id: number;
-  error_solutions_id: string | IErrorSolutions;
-  error_symptoms_id: string | IErrorSymptoms;
+  error_solutions_id: IErrorSolutions;
+  error_symptoms_id: IErrorSymptoms;
 }
 
 export interface IErrorSolutionsCauses {
   id: number;
-  error_solutions_id: string | IErrorSolutions;
-  error_causes_id: string | IErrorCauses;
+  error_solutions_id: IErrorSolutions;
+  error_causes_id: IErrorCauses;
 }
 
 export interface IErrorSymptoms {
@@ -126,7 +126,7 @@ export interface IPartners {
   slug: string;
   logo: string;
   website: string;
-  category: number | IPartnerCategories;
+  category: IPartnerCategories;
   featured: boolean;
   status: "published" | "draft" | "archived";
   sort: number;
@@ -143,7 +143,7 @@ export interface IBlockHero {
   id: string;
   headline: string;
   content: string | TrustedHTML;
-  buttons: "json";
+  buttons: {label: string}[];
   image: string;
 }
 
@@ -158,14 +158,14 @@ export interface IBlockCardGroup {
   headline: string;
   content: string | TrustedHTML;
   group_type: string;
-  cards: "json";
-  posts: number[] | IBlockCardGroupPosts[];
+  cards?: IBlockCardGroupCards[];
+  posts?: IBlockCardGroupPosts[];
 }
 
 export interface IBlockCardGroupPosts {
   id: number;
   block_cardgroup_id: string | IBlockCardGroup;
-  posts_id: string | IPosts;
+  posts_id: IPosts;
 }
 
 export interface IBlockCardGroupCards {

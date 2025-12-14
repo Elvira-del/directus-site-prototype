@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import client from "@/lib/directus";
+import { IPartnerCategories, IPartners } from "@/types/api.types";
 import { readItems } from "@directus/sdk";
 import Link from "next/link";
 
@@ -38,11 +39,18 @@ const getPartners = async () => {
   try {
     const partners = await client.request(
       readItems("partners", {
-        fields: ["*", { category: ["name"] }],
+        fields: [
+          "id",
+          "name",
+          "description",
+          "slug",
+          "logo",
+          { category: ["id", "name"] },
+        ],
       }),
     );
 
-    return partners;
+    return partners as IPartners[];
   } catch (error) {
     console.error("Error fetching partners:", error);
   }
@@ -56,7 +64,7 @@ const getPartnerCategories = async () => {
       }),
     );
 
-    return categories;
+    return categories as IPartnerCategories[];
   } catch (error) {
     console.error("Error fetching partner categories:", error);
   }

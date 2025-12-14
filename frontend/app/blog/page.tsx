@@ -1,35 +1,36 @@
-"use client";
-
 import { Container } from "@/components/Container";
 import Post from "@/components/Post";
 import client from "@/lib/directus";
+import { IPosts } from "@/types/api.types";
 import { readItems } from "@directus/sdk";
-import { useEffect, useState } from "react";
 
-export default function Page() {
-  const [posts, setPosts] = useState([]);
+const getPosts = async () => {
+  try {
+    const posts = await client.request(
+      readItems("posts", {
+        fields: [
+          "id",
+          "title",
+          "excert",
+          { image: ["id", "title"] },
+          "slug",
+          "date_created",
+          "tags",
+        ],
+        filter: {
+          status: { _eq: "published" },
+        },
+        sort: ["-date_created"],
+      }),
+    );
+    return posts as IPosts[];
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+  }
+};
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await client.request(
-          readItems("posts", {
-            fields: ["*", "image.title", "image.id"],
-            filter: {
-              status: { _eq: "published" },
-            },
-            sort: ["-date_created"],
-          }),
-        );
-        setPosts(response);
-        console.log("Posts fetched:", response);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
-
-    fetchPosts();
-  }, []);
+export default async function Page() {
+  const posts = await getPosts();
 
   return (
     <section className="mb-10">
