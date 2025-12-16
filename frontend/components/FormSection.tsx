@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Container } from "./Container";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { Button } from "./ui/button";
 
 export default function FormSection({ tagline, headline, form }) {
   const [formData, setFormData] = useState(() =>
@@ -26,7 +31,7 @@ export default function FormSection({ tagline, headline, form }) {
 
     try {
       const response = await fetch(
-        "http://localhost:8055/items/form_submissions",
+        `${process.env.NEXT_PUBLIC_DIRECTUS_URL}/items/form_submissions`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -53,45 +58,54 @@ export default function FormSection({ tagline, headline, form }) {
   if (!form || !form.fields) return null;
 
   return (
-    <section className="form-section">
-      <div className="container">
-        <div className="form-header">
-          {tagline && <p className="tagline">{tagline}</p>}
+    <section className="mb-10 bg-gray-50 py-20">
+      <Container>
+        <div className="text-center mb-12">
+          {tagline && <p className="text-gray-600">{tagline}</p>}
           {headline && <h2>{headline}</h2>}
         </div>
 
         {isSubmitted ? (
-          <div className="success-message">
-            <h3>Thank you!</h3>
-            <p>
+          <div className="text-center bg-green-200 p-10 rounded-lg shadow-md">
+            <h3 className="text-2xl font-semibold text-green-700 mb-2.5">
+              Thank you!
+            </h3>
+            <p className="text-base text-green-700 mb-7">
               {form.success_message ||
                 "Your form has been successfully submitted."}
             </p>
-            <button
-              onClick={() => setIsSubmitted(false)}
-              className="reset-button"
-            >
+            <Button onClick={() => setIsSubmitted(false)}>
               Submit another response
-            </button>
+            </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="contact-form">
-            {error && <div className="error-message">{error}</div>}
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col max-w-[50%] space-y-6 mx-auto"
+          >
+            {error && (
+              <div className="bg-red-200 text-red-700 p-3 rounded-lg mb-5 text-[14px]">
+                {error}
+              </div>
+            )}
 
             {form.fields.map((field) => (
-              <div className="form-group" key={field.id}>
-                <label htmlFor={field.name}>{field.label}</label>
+              <div key={field.id}>
+                <Label htmlFor={field.name}>{field.label}</Label>
                 {field.type === "textarea" ? (
-                  <textarea
+                  <Textarea
+                    className="mt-2"
                     id={field.name}
                     name={field.name}
                     value={formData[field.name]}
+                    placeholder="Your message..."
                     onChange={handleChange}
-                    rows="5"
+                    rows={5}
                     required={field.required}
                   />
                 ) : (
-                  <input
+                  <Input
+                    className="mt-2"
                     id={field.name}
                     type={field.type || "text"}
                     name={field.name}
@@ -103,152 +117,17 @@ export default function FormSection({ tagline, headline, form }) {
               </div>
             ))}
 
-            <button
+            <Button
+              className="w-full"
+              size="lg"
               type="submit"
-              className="submit-button"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : form.submit_label || "Submit"}
-            </button>
+            </Button>
           </form>
         )}
-      </div>
-
-      <style jsx>{`
-        .form-section {
-          padding: 80px 0;
-          background-color: #f7fafc;
-        }
-
-        .container {
-          max-width: 700px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-
-        .form-header {
-          text-align: center;
-          margin-bottom: 40px;
-        }
-
-        h2 {
-          font-size: 36px;
-          font-weight: bold;
-          color: #1a202c;
-          margin-bottom: 20px;
-        }
-
-        .description {
-          font-size: 18px;
-          color: #4a5568;
-          line-height: 1.6;
-        }
-
-        .contact-form {
-          background-color: #ffffff;
-          padding: 40px;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .form-group {
-          margin-bottom: 20px;
-        }
-
-        label {
-          display: block;
-          font-size: 16px;
-          font-weight: 600;
-          color: #2d3748;
-          margin-bottom: 8px;
-        }
-
-        input,
-        textarea {
-          width: 100%;
-          padding: 12px;
-          font-size: 16px;
-          border: 1px solid #e2e8f0;
-          border-radius: 4px;
-          color: #2d3748;
-          transition: border-color 0.3s;
-        }
-
-        input:focus,
-        textarea:focus {
-          outline: none;
-          border-color: #3182ce;
-        }
-
-        .submit-button {
-          display: block;
-          width: 100%;
-          background-color: #3182ce;
-          color: white;
-          border: none;
-          padding: 12px;
-          font-size: 16px;
-          font-weight: 600;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background-color 0.3s;
-        }
-
-        .submit-button:hover:not(:disabled) {
-          background-color: #2b6cb0;
-        }
-
-        .submit-button:disabled {
-          background-color: #90cdf4;
-          cursor: not-allowed;
-        }
-
-        .error-message {
-          background-color: #fed7d7;
-          color: #c53030;
-          padding: 12px;
-          border-radius: 4px;
-          margin-bottom: 20px;
-          font-size: 14px;
-        }
-
-        .success-message {
-          text-align: center;
-          background-color: #c6f6d5;
-          padding: 40px;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .success-message h3 {
-          font-size: 24px;
-          font-weight: 600;
-          color: #2f855a;
-          margin-bottom: 10px;
-        }
-
-        .success-message p {
-          font-size: 16px;
-          color: #276749;
-          margin-bottom: 30px;
-        }
-
-        .reset-button {
-          background-color: #38a169;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          font-size: 16px;
-          font-weight: 500;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background-color 0.3s;
-        }
-
-        .reset-button:hover {
-          background-color: #2f855a;
-        }
-      `}</style>
+      </Container>
     </section>
   );
 }
