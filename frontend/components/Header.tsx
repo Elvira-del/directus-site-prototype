@@ -10,14 +10,7 @@ import {
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
 import { Container } from "./Container";
-
-const navLinks = [
-  { label: "About Company", slug: "/" },
-  { label: "Blog", slug: "blog" },
-  { label: "Partners", slug: "partners" },
-  { label: "Documentation", slug: "docs" },
-  { label: "Solutions", slug: "solutions" },
-];
+import { Button } from "./ui/button";
 
 export const Header = ({ navigation }) => {
   const headerNavigation = navigation.filter(
@@ -28,60 +21,72 @@ export const Header = ({ navigation }) => {
     return null;
   }
 
+  console.info("HEADER NAVIGATION ITEMS:", headerNavigation.items);
+
   return (
     <header className="bg-white shadow-md">
       <Container>
         <div className="flex items-center justify-between py-5">
-          <div>
+          <Button
+            asChild
+            variant="link"
+            className="text-gray-900 transition-colors "
+          >
             <Link href="/">Home</Link>
-          </div>
-          <ul className="flex gap-4">
-            {headerNavigation.items.map((item) => (
-              <NavigationItem key={item.id} item={item} />
-            ))}
-            {/* {navLinks.map((link) => ( */}
-            {/* //           <NavigationMenu key={link.slug}>
-    //             <NavigationMenuList>
-    //               <NavigationMenuItem>
-    //                 <NavigationMenuTrigger>{link.label}</NavigationMenuTrigger>
-    //                 <NavigationMenuContent>
-    //                   <NavigationMenuLink asChild>
-    //                     <Link href={`/${link.slug}`}>{link.label}</Link>
-    //                   </NavigationMenuLink>
-    //                 </NavigationMenuContent>
-    //               </NavigationMenuItem>
-    //             </NavigationMenuList>
-    //           </NavigationMenu>
-    //         ))} */}
-          </ul>
+          </Button>
+
+          <NavigationMenu className="hidden md:flex items-center gap-8">
+            <NavigationMenuList className="flex gap-4">
+              {headerNavigation.items.map((item) => {
+                return item.type === "group" ? (
+                  <NavigationMenuItem key={item.id}>
+                    <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      {item.children.map((child) => (
+                        <NavigationMenuLink key={child.id} asChild>
+                          <Link
+                            href={resolveItemUrl(child)}
+                            target={
+                              child.target === "_blank" ? "_blank" : undefined
+                            }
+                            rel={
+                              child.target === "_blank"
+                                ? "noopener noreferrer"
+                                : undefined
+                            }
+                          >
+                            {child.title}
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                ) : (
+                  <NavigationMenuItem key={item.id}>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href={resolveItemUrl(item)}
+                        target={item.target === "_blank" ? "_blank" : undefined}
+                        rel={
+                          item.target === "_blank"
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                      >
+                        {item.title}
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                );
+              })}
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
       </Container>
     </header>
   );
 };
 
-// Recursive navigation item renderer
-function NavigationItem({ item }) {
-  if (item.type === "group") {
-    return item.children?.map((child) => (
-      <NavigationItem key={child.id} item={child} />
-    ));
-  }
-
-  return (
-    <div>
-      <Link
-        href={resolveItemUrl(item)}
-        target={item.target === "_blank" ? "_blank" : undefined}
-        rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
-      >
-        {item.title}
-      </Link>
-    </div>
-  );
-}
-
-// Helper to resolve link destination properly
 function resolveItemUrl(item) {
   if (item.type === "page" && item.page) {
     return `${item.page.permalink}`;
