@@ -10,18 +10,7 @@ const getPartnerBySlug = async (slug: string) => {
         filter: {
           slug: { _eq: slug },
         },
-        fields: [
-          "id",
-          "name",
-          "description",
-          "logo",
-          "website",
-          "category",
-          "featured",
-          "status",
-          "sort",
-          "slug",
-        ],
+        fields: ["id", "title", "description", "logo", "sort", "slug"] as const,
         limit: 1,
       }),
     );
@@ -48,7 +37,7 @@ export default async function PartnerDetail({
   return (
     <section className="mb-10">
       <Container>
-        <h1 className="text-3xl font-bold">{partner.name}</h1>
+        <h1 className="text-3xl font-bold">{partner.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: partner.description }} />
       </Container>
     </section>
