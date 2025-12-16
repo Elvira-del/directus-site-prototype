@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import client from "@/lib/directus";
 import { readItems } from "@directus/sdk";
 import Post from "@/components/Post";
-import { IPosts } from "@/types/api.types";
 
 const getPostBySlug = async (params: Promise<{ slug: string }>) => {
   try {
@@ -13,14 +12,7 @@ const getPostBySlug = async (params: Promise<{ slug: string }>) => {
         filter: {
           slug: { _eq: slug },
         },
-        fields: [
-          "id",
-          "title",
-          "content",
-          { image: ["id", "title"] },
-          "date_created",
-          "seo",
-        ] as const,
+        fields: ["*", "image.title", "image.id"] as const,
         limit: 1,
       }),
     );
@@ -30,7 +22,7 @@ const getPostBySlug = async (params: Promise<{ slug: string }>) => {
     }
 
     const post = posts[0];
-    return post as IPosts;
+    return post;
   } catch (error) {
     console.error("Error fetching post:", error);
     return notFound();
@@ -43,6 +35,8 @@ export default async function PostDetail({
   params: Promise<{ slug: string }>;
 }) {
   const post = await getPostBySlug(params);
+
+  console.info("POST DETAIL POST:", post);
 
   return <Post variant={"article"} {...post} />;
 }
