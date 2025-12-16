@@ -1,3 +1,5 @@
+"use client";
+
 import { Container } from "@/components/Container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,9 +33,10 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import client from "@/lib/directus";
-import { IPartnerCategories, IPartners } from "@/types/api.types";
 import { readItems } from "@directus/sdk";
+import { Building2, Search } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const getPartners = async () => {
   try {
@@ -41,109 +44,173 @@ const getPartners = async () => {
       readItems("partners", {
         fields: [
           "id",
-          "name",
+          "title",
           "description",
           "slug",
           "logo",
-          { category: ["id", "name"] },
-        ],
+          "website",
+          "category",
+        ] as const,
       }),
     );
 
-    return partners as IPartners[];
+    return partners;
   } catch (error) {
     console.error("Error fetching partners:", error);
   }
 };
 
-const getPartnerCategories = async () => {
-  try {
-    const categories = await client.request(
-      readItems("partner_categories", {
-        fields: ["id", "name"],
-      }),
-    );
+export default function PartnersPage() {
+  const [partners, setPartners] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name-asc");
 
-    return categories as IPartnerCategories[];
-  } catch (error) {
-    console.error("Error fetching partner categories:", error);
-  }
-};
+  useEffect(() => {
+    async function fetchPartners() {
+      const data = await getPartners();
+      setPartners(data);
+    }
 
-export default async function Page() {
-  const partners = await getPartners();
-  const categories = await getPartnerCategories();
+    fetchPartners();
+  }, []);
+
+  const filteredPartners = searchTerm
+    ? partners.filter((partner) =>
+        partner.title.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+    : partners;
+
+  console.info("PARTNERS:", filteredPartners);
 
   return (
-    <section className="mb-10">
+    <section className="mb-10 bg-gray-50">
       <Container>
-        <h1 className="text-3xl font-bold mb-8 text-center">Partners</h1>
-        <div className="grid md:grid-cols-3 gap-3 mb-8">
-          <div className="flex gap-5 md:col-span-full">
-            <Input type="search" placeholder="Search partners..." />
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Categories</SelectLabel>
-                  {categories?.map(({ name }) => (
+        <div className="bg-linear-to-b from-blue-50 to-white">
+          <div className="mb-8 text-center pt-12">
+            <h1 className="text-gray-900 mb-4">Partners</h1>
+            <p className="text-gray-600">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Browse
+              our trusted partners.
+            </p>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div className="grid md:grid-cols-3 gap-3">
+              {/* Search */}
+              <div className="md:col-span-full">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    className="pl-10"
+                    type="search"
+                    placeholder="Search partners..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Category Filter */}
+              <div>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Categories</SelectLabel>
+                      {/* {categories?.map(({ name }) => (
                     <SelectItem key={name} value={name}>
                       {name}
                     </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <Separator className="col-span-full" />
-          <div className="flex items-center justify-between col-span-full">
-            <p className="text-gray-600">Showing num of num partners</p>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Sort Options</SelectLabel>
-                  <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                  <SelectItem value="date-asc">Date Added (Oldest)</SelectItem>
-                  <SelectItem value="date-desc">Date Added (Newest)</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                  ))} */}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Separator className="col-span-full" />
+              <div className="flex items-center justify-between col-span-full">
+                <p className="text-gray-600">
+                  Showing {filteredPartners.length} of {partners.length}{" "}
+                  partners
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Sort by:</span>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Sort Options</SelectLabel>
+                        <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                        <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                        <SelectItem value="founded-oldest">
+                          Oldest First
+                        </SelectItem>
+                        <SelectItem value="founded-newest">
+                          Newest First
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {partners?.map((partner) => (
-            <li key={partner.id}>
-              <Card className="h-full">
-                <CardHeader className="flex justify-between">
-                  <CardTitle>{partner.name}</CardTitle>
-                  <CardDescription>
-                    <Badge variant="secondary">{partner.category?.name}</Badge>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div
-                    dangerouslySetInnerHTML={{ __html: partner.description }}
-                  />
-                </CardContent>
-                <CardFooter className="mt-auto">
-                  <CardAction>
-                    <Button asChild>
-                      <Link href={`/partners/${partner.slug}`}>
-                        View Details
-                      </Link>
-                    </Button>
-                  </CardAction>
-                </CardFooter>
-              </Card>
-            </li>
-          ))}
-        </ul>
+
+        {/* Results */}
+        {filteredPartners.length === 0 ? (
+          <div className="text-center py-12">
+            <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-gray-900 mb-2">No partners found</h3>
+            <p className="text-gray-600">
+              Try adjusting your search or filters
+            </p>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => {
+                setSearchTerm("");
+              }}
+            >
+              Clear Filters
+            </Button>
+          </div>
+        ) : (
+          <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+            {filteredPartners.map((partner) => (
+              <li key={partner.id}>
+                <Card className="h-full">
+                  <CardHeader className="flex justify-between">
+                    <CardTitle>{partner.title}</CardTitle>
+                    <CardDescription>
+                      <Badge variant="secondary">{partner.category}</Badge>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div
+                      dangerouslySetInnerHTML={{ __html: partner.description }}
+                    />
+                  </CardContent>
+                  <CardFooter className="mt-auto">
+                    <CardAction>
+                      <Button asChild>
+                        <Link href={`/partners/${partner.slug}`}>
+                          View Details
+                        </Link>
+                      </Button>
+                    </CardAction>
+                  </CardFooter>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        )}
+
         <Pagination>
           <PaginationContent>
             <PaginationItem>
