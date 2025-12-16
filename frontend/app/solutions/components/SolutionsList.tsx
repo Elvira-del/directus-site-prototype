@@ -4,7 +4,6 @@ import { Container } from "@/components/Container";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { IErrorSolutions } from "@/types/api.types";
 import {
   AlertCircle,
   AlertTriangle,
@@ -41,133 +40,124 @@ function getSeverityColor(severity: string) {
   }
 }
 
-export const SolutionsList = ({
-  solutions,
-}: {
-  solutions: IErrorSolutions[] | undefined;
-}) => {
+export const SolutionsList = ({ solutions }) => {
   const [expandedError, setExpandedError] = useState<string | null>(null);
 
   if (!solutions || solutions.length === 0) {
     return (
-      <Container>
-        <div className="text-center py-12">
-          <p className="text-gray-500">No solutions found</p>
-        </div>
-      </Container>
+      <div className="text-center py-12">
+        <p className="text-gray-500">No solutions found</p>
+      </div>
     );
   }
 
   return (
-    <Container>
-      <div className="space-y-4">
-        {solutions?.map((solution) => {
-          const isExpanded = expandedError === solution.id;
-          return (
-            <Card
-              key={solution.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow"
+    <div className="space-y-4">
+      {solutions?.map((solution) => {
+        const isExpanded = expandedError === solution.id;
+        return (
+          <Card
+            key={solution.id}
+            className="overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => setExpandedError(isExpanded ? null : solution.id)}
             >
-              <CardHeader
-                className="cursor-pointer"
-                onClick={() =>
-                  setExpandedError(isExpanded ? null : solution.id)
-                }
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className="mt-1">
-                      {getSeverityIcon(solution.severity)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2 flex-wrap">
-                        <code className="px-3 py-1 bg-gray-100 rounded text-sm text-gray-800">
-                          {solution.code}
-                        </code>
-                        <Badge
-                          className="capitalize"
-                          key={solution.category}
-                          variant="outline"
-                        >
-                          {solution.category}
-                        </Badge>
-                        <Badge
-                          className={getSeverityColor(solution.severity)}
-                          variant="outline"
-                        >
-                          {solution.severity}
-                        </Badge>
-                      </div>
-                      <h3 className="text-gray-900 mb-2">{solution.title}</h3>
-                      <div
-                        className="text-gray-600"
-                        dangerouslySetInnerHTML={{
-                          __html: solution.description,
-                        }}
-                      />
-                    </div>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="mt-1">
+                    {getSeverityIcon(solution.severity)}
                   </div>
-                  <Button variant="ghost" size="sm">
-                    {isExpanded ? (
-                      <ChevronUp className="h-5 w-5" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5" />
-                    )}
-                  </Button>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
+                      {/* <code className="px-3 py-1 bg-gray-100 rounded text-sm text-gray-800">
+                        {solution.code}
+                      </code> */}
+                      {/* <Badge
+                        className="capitalize"
+                        key={solution.category}
+                        variant="outline"
+                      >
+                        {solution.category}
+                      </Badge> */}
+                      <Badge
+                        className={getSeverityColor(solution.severity)}
+                        variant="outline"
+                      >
+                        {solution.severity}
+                      </Badge>
+                    </div>
+                    <h3 className="text-gray-900 mb-2">{solution.title}</h3>
+                    <div
+                      className="text-gray-600"
+                      dangerouslySetInnerHTML={{
+                        __html: solution.description,
+                      }}
+                    />
+                  </div>
                 </div>
-              </CardHeader>
+                <Button variant="ghost" size="sm">
+                  {isExpanded ? (
+                    <ChevronUp className="h-5 w-5" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5" />
+                  )}
+                </Button>
+              </div>
+            </CardHeader>
 
-              {isExpanded && (
-                <CardContent className="border-t bg-gray-50">
-                  <div className="grid md:grid-cols-2 gap-8 mb-8">
-                    <div>
-                      <h4 className="text-gray-900 mb-3 flex items-center gap-2">
-                        <AlertCircle className="h-5 w-5 text-red-500" />
-                        Symptoms
-                      </h4>
-                      <ul className="space-y-2">
-                        {solution.symptoms.map(
-                          ({ error_symptoms_id: { id, title } }) => (
-                            <li
-                              key={id}
-                              className="flex items-baseline gap-2 text-gray-700"
-                            >
-                              <span className="text-red-500 mt-1">•</span>
-                              {title}
-                            </li>
-                          ),
-                        )}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="text-gray-900 mb-3 flex items-center gap-2">
-                        <Info className="h-5 w-5 text-blue-500" />
-                        Common Causes
-                      </h4>
-                      <ul className="space-y-2">
-                        {solution.causes.map(
-                          ({ error_causes_id: { id, title } }) => (
-                            <li
-                              key={id}
-                              className="flex items-baseline gap-2 text-gray-700"
-                            >
-                              <span className="text-blue-500 mt-1">•</span>
-                              {title}
-                            </li>
-                          ),
-                        )}
-                      </ul>
-                    </div>
+            {isExpanded && (
+              <CardContent className="border-t bg-gray-50">
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <div>
+                    <h4 className="text-gray-900 mb-3 flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5 text-red-500" />
+                      Symptoms
+                    </h4>
+                    {/* <ul className="space-y-2">
+                      {solution.symptoms.map(
+                        ({ error_symptoms_id: { id, title } }) => (
+                          <li
+                            key={id}
+                            className="flex items-baseline gap-2 text-gray-700"
+                          >
+                            <span className="text-red-500 mt-1">•</span>
+                            {title}
+                          </li>
+                        ),
+                      )}
+                    </ul> */}
                   </div>
 
-                  <div className="mb-8">
-                    <h4 className="text-gray-900 mb-4 flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      Solutions
+                  <div>
+                    <h4 className="text-gray-900 mb-3 flex items-center gap-2">
+                      <Info className="h-5 w-5 text-blue-500" />
+                      Common Causes
                     </h4>
-                    <div className="space-y-6">
-                      {/* {solution.solutions.map(
+                    {/* <ul className="space-y-2">
+                      {solution.causes.map(
+                        ({ error_causes_id: { id, title } }) => (
+                          <li
+                            key={id}
+                            className="flex items-baseline gap-2 text-gray-700"
+                          >
+                            <span className="text-blue-500 mt-1">•</span>
+                            {title}
+                          </li>
+                        ),
+                      )}
+                    </ul> */}
+                  </div>
+                </div>
+
+                <div className="mb-8">
+                  <h4 className="text-gray-900 mb-4 flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    Solutions
+                  </h4>
+                  <div className="space-y-6">
+                    {/* {solution.solutions.map(
                       ({ step, title, description, codeExample }) => (
                         <div
                           key={step}
@@ -188,21 +178,21 @@ export const SolutionsList = ({
                         </div>
                       ),
                     )} */}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div>
+                    <div className="text-gray-600 mb-2">Tags:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {/* {solution.tags?.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))} */}
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                      <div className="text-gray-600 mb-2">Tags:</div>
-                      <div className="flex flex-wrap gap-2">
-                        {solution.tags?.map((tag) => (
-                          <Badge key={tag} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    {/* {solutions.relatedErrors.length > 0 && (
+                  {/* {solutions.relatedErrors.length > 0 && (
                     <div>
                       <div className="text-gray-600 mb-2">Related Errors:</div>
                       <div className="flex flex-wrap gap-2">
@@ -224,13 +214,12 @@ export const SolutionsList = ({
                       </div>
                     </div>
                   )} */}
-                  </div>
-                </CardContent>
-              )}
-            </Card>
-          );
-        })}
-      </div>
-    </Container>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        );
+      })}
+    </div>
   );
 };
