@@ -1,6 +1,5 @@
 "use client";
 
-import { IBlockRichtext } from "@/types/api.types";
 import { Container } from "./Container";
 
 export default function RichTextSection({

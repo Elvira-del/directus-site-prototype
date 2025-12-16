@@ -37,6 +37,27 @@ export async function generateMetadata({ params }) {
   };
 }
 
+const blockToComponent = (collectionName) => {
+  switch (collectionName) {
+    case "block_hero":
+      return HeroSection;
+    case "block_richtext":
+      return RichTextSection;
+    // case "block_gallery":
+    //   return GallerySection;
+    // case "block_pricing":
+    //   return PricingSection;
+    case "block_form":
+      return FormSection;
+    case "block_posts":
+      return PostsSection;
+    case "block_ticker":
+      return TickerSection;
+    default:
+      return null;
+  }
+};
+
 export default async function Page({ params }) {
   const { slug } = await params;
 
@@ -53,31 +74,31 @@ export default async function Page({ params }) {
     }),
   );
 
-  const hero_data = homepageData[0].blocks?.filter(
-    (block) => block.collection === "block_hero",
-  )?.[0];
-  const rich_text_data = homepageData[0].blocks?.filter(
-    (block) => block.collection === "block_richtext",
-  )?.[0];
-  const gallery_data = homepageData[0].blocks?.filter(
-    (block) => block.collection === "block_gallery",
-  )?.[0];
-  const pricing_data = homepageData[0].blocks?.filter(
-    (block) => block.collection === "block_pricing",
-  )?.[0];
-  const form_data = homepageData[0].blocks?.filter(
-    (block) => block.collection === "block_form",
-  )?.[0];
-  const posts = homepageData[0].blocks?.filter(
-    (block) => block.collection === "block_posts",
-  )?.[0];
-  const ticker_data = homepageData[0].blocks?.filter(
-    (block) => block.collection === "block_ticker",
-  )?.[0];
+  // const hero_data = homepageData[0].blocks?.filter(
+  //   (block) => block.collection === "block_hero",
+  // )?.[0];
+  // const rich_text_data = homepageData[0].blocks?.filter(
+  //   (block) => block.collection === "block_richtext",
+  // )?.[0];
+  // const gallery_data = homepageData[0].blocks?.filter(
+  //   (block) => block.collection === "block_gallery",
+  // )?.[0];
+  // const pricing_data = homepageData[0].blocks?.filter(
+  //   (block) => block.collection === "block_pricing",
+  // )?.[0];
+  // const form_data = homepageData[0].blocks?.filter(
+  //   (block) => block.collection === "block_form",
+  // )?.[0];
+  // const posts = homepageData[0].blocks?.filter(
+  //   (block) => block.collection === "block_posts",
+  // )?.[0];
+  // const ticker_data = homepageData[0].blocks?.filter(
+  //   (block) => block.collection === "block_ticker",
+  // )?.[0];
 
   return (
     <>
-      {hero_data && (
+      {/* {hero_data && (
         <HeroSection
           tagline={hero_data.item.tagline}
           headline={hero_data.item.headline}
@@ -86,19 +107,25 @@ export default async function Page({ params }) {
           layout={hero_data.item.layout}
           button_group={hero_data.item.button_group.buttons}
         />
-      )}
+      )} */}
 
-      {rich_text_data && <RichTextSection {...rich_text_data.item} />}
+      {/* {rich_text_data && <RichTextSection {...rich_text_data.item} />} */}
 
-      {posts && <PostsSection {...posts.item} />}
+      {/* {posts && <PostsSection {...posts.item} />} */}
 
       {/* {gallery_data && <GallerySection {...gallery_data.item} />} */}
 
-      {ticker_data && <TickerSection {...ticker_data.item} />}
+      {/* {ticker_data && <TickerSection {...ticker_data.item} />} */}
 
       {/* {pricing_data && <PricingSection {...pricing_data.item} />} */}
 
-      {form_data && <FormSection {...form_data.item} />}
+      {/* {form_data && <FormSection {...form_data.item} />} */}
+
+      {homepageData[0].blocks?.map((block) => {
+        const Component = blockToComponent(block.collection);
+        if (!Component) return null;
+        return <Component key={block.id} {...block.item} />;
+      })}
     </>
   );
 }
